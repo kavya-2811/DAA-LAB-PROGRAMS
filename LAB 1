@@ -1,0 +1,38 @@
+def simulate_dfa(transitions, initial_state, final_states, input_string):
+    current_state = initial_state
+
+    for symbol in input_string:
+        # Check if transition exists
+        if (current_state, symbol) in transitions:
+            current_state = transitions[(current_state, symbol)]
+        else:
+            return "Rejected (Invalid transition)"
+
+    # Check if final state is accepting
+    if current_state in final_states:
+        return "Accepted"
+    else:
+        return "Rejected"
+
+
+# Example DFA
+# States: q0, q1
+# Alphabet: 0, 1
+# Accepts strings ending with '1'
+
+transitions = {
+    ('q0', '0'): 'q0',
+    ('q0', '1'): 'q1',
+    ('q1', '0'): 'q0',
+    ('q1', '1'): 'q1'
+}
+
+initial_state = 'q0'
+final_states = {'q1'}
+
+# Input string
+input_string = input("Enter the input string: ")
+
+# Run DFA
+result = simulate_dfa(transitions, initial_state, final_states, input_string)
+print("Result:", result)
