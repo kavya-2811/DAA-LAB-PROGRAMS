@@ -1,0 +1,29 @@
+def find_fake_coin(coins, left, right):
+    # Base case: only one coin
+    if left == right:
+        return left
+
+    # Divide the coins into two halves
+    mid = (left + right) // 2
+
+    left_sum = sum(coins[left:mid+1])
+    right_sum = sum(coins[mid+1:right+1])
+
+    # Compare sums to find which half contains the fake coin
+    if left_sum < right_sum:
+        return find_fake_coin(coins, left, mid)
+    elif left_sum > right_sum:
+        return find_fake_coin(coins, mid+1, right)
+    else:
+        return -1  # No fake coin found (all equal)
+
+
+# Input from user
+coins = list(map(int, input("Enter coin weights: ").split()))
+
+index = find_fake_coin(coins, 0, len(coins) - 1)
+
+if index != -1:
+    print(f"Fake coin found at position {index} with weight {coins[index]}")
+else:
+    print("No fake coin detected")
