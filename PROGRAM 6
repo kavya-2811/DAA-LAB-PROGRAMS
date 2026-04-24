@@ -1,0 +1,48 @@
+def build_shift_table(pattern):
+    m = len(pattern)
+    shift_table = {}
+
+    # Initialize all characters with default shift = pattern length
+    for char in set(pattern):
+        shift_table[char] = m
+
+    # Fill shift values based on pattern
+    for i in range(m - 1):
+        shift_table[pattern[i]] = m - 1 - i
+
+    return shift_table
+
+
+def horspool_search(text, pattern):
+    n = len(text)
+    m = len(pattern)
+
+    shift_table = build_shift_table(pattern)
+    i = m - 1  # Start at end of pattern
+
+    while i < n:
+        k = 0
+        # Compare pattern from right to left
+        while k < m and pattern[m - 1 - k] == text[i - k]:
+            k += 1
+
+        if k == m:
+            return i - m + 1  # Match found
+
+        # Shift based on mismatched character
+        shift = shift_table.get(text[i], m)
+        i += shift
+
+    return -1  # No match found
+
+
+# Input from user
+text = input("Enter the text: ")
+pattern = input("Enter the pattern: ")
+
+position = horspool_search(text, pattern)
+
+if position != -1:
+    print(f"Pattern found at index {position}")
+else:
+    print("Pattern not found")
