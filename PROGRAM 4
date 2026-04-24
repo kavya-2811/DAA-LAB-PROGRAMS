@@ -1,0 +1,20 @@
+def josephus(n, k):
+    people = list(range(1, n + 1))  # Create list of people
+    index = 0
+
+    while len(people) > 1:
+        # Find the index of the person to be removed
+        index = (index + k - 1) % len(people)
+        eliminated = people.pop(index)
+        print(f"Eliminated: {eliminated}")
+
+    return people[0]
+
+
+# Input from user
+n = int(input("Enter number of people: "))
+k = int(input("Enter step count (k): "))
+
+survivor = josephus(n, k)
+
+print("The last surviving person is:", survivor)
