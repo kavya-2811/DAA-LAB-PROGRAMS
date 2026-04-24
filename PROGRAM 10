@@ -1,0 +1,99 @@
+import math
+
+N = 4  # Number of cities
+
+# Function to find minimum edge cost from a city
+def first_min(cost, i):
+    min_val = math.inf
+    for k in range(N):
+        if cost[i][k] < min_val and i != k:
+            min_val = cost[i][k]
+    return min_val
+
+# Function to find second minimum edge cost
+def second_min(cost, i):
+    first, second = math.inf, math.inf
+    for j in range(N):
+        if i == j:
+            continue
+        if cost[i][j] <= first:
+            second = first
+            first = cost[i][j]
+        elif cost[i][j] < second:
+            second = cost[i][j]
+    return second
+
+# Branch and Bound function
+def tsp_recursive(cost, curr_bound, curr_weight, level, curr_path, visited):
+    global final_res, final_path
+
+    # Base case: all cities visited
+    if level == N:
+        if cost[curr_path[level - 1]][curr_path[0]] != 0:
+            curr_res = curr_weight + cost[curr_path[level - 1]][curr_path[0]]
+            if curr_res < final_res:
+                final_path = curr_path[:] + [curr_path[0]]
+                final_res = curr_res
+        return
+
+    # Try all possible next cities
+    for i in range(N):
+        if cost[curr_path[level - 1]][i] != 0 and not visited[i]:
+            temp = curr_bound
+            curr_weight += cost[curr_path[level - 1]][i]
+
+            # Compute new bound
+            if level == 1:
+                curr_bound -= ((first_min(cost, curr_path[level - 1]) +
+                                first_min(cost, i)) / 2)
+            else:
+                curr_bound -= ((second_min(cost, curr_path[level - 1]) +
+                                first_min(cost, i)) / 2)
+
+            # Check if promising
+            if curr_bound + curr_weight < final_res:
+                curr_path[level] = i
+                visited[i] = True
+
+                tsp_recursive(cost, curr_bound, curr_weight,
+                              level + 1, curr_path, visited)
+
+            # Backtrack
+            curr_weight -= cost[curr_path[level - 1]][i]
+            curr_bound = temp
+            visited[i] = False
+
+
+def tsp(cost):
+    global final_res, final_path
+
+    curr_bound = 0
+    curr_path = [-1] * (N + 1)
+    visited = [False] * N
+
+    # Initial bound
+    for i in range(N):
+        curr_bound += (first_min(cost, i) + second_min(cost, i))
+
+    curr_bound = math.ceil(curr_bound / 2)
+
+    visited[0] = True
+    curr_path[0] = 0
+
+    tsp_recursive(cost, curr_bound, 0, 1, curr_path, visited)
+
+
+# Input cost matrix
+cost = []
+print("Enter the cost matrix:")
+for i in range(N):
+    row = list(map(int, input().split()))
+    cost.append(row)
+
+final_res = math.inf
+final_path = []
+
+tsp(cost)
+
+print("Minimum cost:", final_res)
+print("Path taken:", final_path)
